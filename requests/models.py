@@ -9,8 +9,6 @@ class Request(models.Model):
     content = models.TextField('요청 내용', blank=True)
     mentiLatitude = models.DecimalField('멘티 위도', max_digits=23, decimal_places=20)
     mentiLongitude = models.DecimalField('멘티 경도', max_digits=24, decimal_places=20)
-    mentoLatitude = models.DecimalField('멘토 위도', max_digits=23, decimal_places=20, default=0)
-    mentoLongitude = models.DecimalField('멘토 경도', max_digits=23, decimal_places=20, default=0)
     menti = models.ForeignKey(to=User, related_name='mentis', on_delete=models.CASCADE)
     mento = models.ForeignKey(to=User, related_name='mentos', on_delete=models.CASCADE, null=True, blank=True)
     requestTime = models.DateTimeField('요청시간', auto_now_add=True)
