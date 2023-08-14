@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'requests',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -126,3 +128,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
+
+ALLOWED_HOSTS = ['127.0.0.1', '172.30.1.69', '172.30.1.7', '172.30.1.20',]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+    'http://localhost:3000',
+]
