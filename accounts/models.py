@@ -10,6 +10,6 @@ class User(AbstractUser):
     gender = models.CharField('성별', max_length=2)
     role = models.CharField('역할', max_length=2)
     introduction = models.TextField('소개')
-    first_name = None
+    first_name = None #
     last_name = None
 
