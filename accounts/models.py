@@ -40,6 +40,7 @@ class UserManager(BaseUserManager):
         return user
 class User(AbstractBaseUser):
     id = models.AutoField(primary_key=True)
+    nickname = models.AutoField(primary_key=True) #수정
     name = models.CharField(default='', max_length=100, null=False, blank=False)
     
     # User 모델의 필수 field
@@ -49,8 +50,8 @@ class User(AbstractBaseUser):
     # 헬퍼 클래스 사용
     objects = UserManager()
 
-    # 사용자의 username field는 nickname으로 설정
-    USERNAME_FIELD = 'id'
+    # 사용자의 username field는  설정
+    USERNAME_FIELD = 'nickname'
     # 필수로 작성해야하는 field
     REQUIRED_FIELDS = ['name', 'password']
 
