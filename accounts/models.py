@@ -1,6 +1,18 @@
 from django.db import models
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+
+# class UserManager(BaseUserManager):
+#     use_in_migrations = True
+#     #user 생성
+#     def create_user(self, username, password = None):
+#         if not username:
+#             raise ValueError('이름을 입력해주세요')
+#         user = self.model(
+#             username = username
+#         )
+#         user.set_password(password)
+#         user.save(using=self.db)
 
 
 class User(AbstractUser):
@@ -13,3 +25,11 @@ class User(AbstractUser):
     first_name = None
     last_name = None
 
+    #User 모델 field
+    is_active = models.BooleanField(default = True)
+    is_admin = models.BooleanField(default=False)
+
+    # objects = UserManager()
+
+    def __str__(self):
+        return self.username

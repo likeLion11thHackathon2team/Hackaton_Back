@@ -10,6 +10,7 @@ from rest_framework.routers import DefaultRouter
 urlpatterns = [
     # path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('user/', include('accounts.urls')),     #
 
     path('requests/', include('requests.urls', namespace='requests')),
 ]
