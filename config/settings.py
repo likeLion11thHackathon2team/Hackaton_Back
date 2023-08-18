@@ -41,9 +41,9 @@ def get_secret(setting, secrets=secrets):
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', '.pythonanywhere.com']
 
 
 # Application definition
@@ -148,11 +148,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-ALLOWED_HOSTS = ['192.168.160.144','192.168.160.83', '127.0.0.1']
-
-CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:8000',
-    'http://127.0.0.1:3000',
-    'http://localhost:3001',
-    'http://localhost:3000',
-]
+CORS_ORIGIN_WHITELIST = []

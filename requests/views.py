@@ -84,7 +84,7 @@ class RequestMento(APIView):
             distance = haversine(mento, menti, unit = 'km')
             if float(distance) <= 1.0:
                 mentiName = User.objects.get(id=helps[i]['menti_id']).name
-                requests_list.append({'category': helps[i]['category'],'content': helps[i]['content'],'mentiName': mentiName,'distance': distance})
+                requests_list.append({'category': helps[i]['category'],'content': helps[i]['content'],'mentiName': mentiName,'distance': distance, 'mentiLatitude':menti_lat, 'mentiLongitude':menti_lon})
         data = {'requests' : requests_list}
         print(data)
         return Response(data)
