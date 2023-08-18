@@ -35,13 +35,15 @@ def get_secret(setting, secrets=secrets):
         error_msg = "Set the {} environment variable".format(setting)
         raise ImproperlyConfigured(error_msg)
 
+SECRET_KEY = get_secret("SECRET_KEY")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', '.pythonanywhere.com']
 
@@ -149,7 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-CORS_ORIGIN_WHITELIST = []
+CORS_ORIGIN_WHITELIST = ['https://hackaton-front-silk.vercel.app/']
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

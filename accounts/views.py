@@ -16,6 +16,7 @@ class UserCreate(generics.CreateAPIView):
 #로그인
 class UserLogin(APIView):
     def post(self, request):
-        user = User.object.get(username=request.id)
+
+        user = User.objects.get(username=request.POST['id'])
         UserSerializer = UserLoginSerializer(user)
-        return Response(UserSerializer)
+        return Response(UserSerializer.data)
