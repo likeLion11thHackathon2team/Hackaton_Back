@@ -19,6 +19,11 @@ class UserLoginSerializer(ModelSerializer):
         model = User
         fields = '__all__'
 
+class UserProfileSerializer(ModelSerializer):
+    class meta:
+        model = User
+        fields = ('username', 'image', 'phoneNumber', 'gender', 'role', 'introduction')
+
 class RequestBaseModelSerializer(ModelSerializer):
     class Meta:
         model = User
