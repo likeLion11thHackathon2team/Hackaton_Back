@@ -2,7 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 
-
+#test주석
 class User(AbstractUser):
     name = models.CharField('이름', max_length=20)
     image = models.ImageField('이미지', null =True, blank = True)
