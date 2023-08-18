@@ -14,30 +14,44 @@ from accounts.models import User
 
 from haversine import haversine
 
-# class IsMentiOrMento(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated
+class IsMentiOrMento(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
     
-#     def has_object_permission(self, request, view, obj):
-#         if request.method == 'GET':
-#             return obj.menti == request.user or obj.mento == request.user
-#         else:
-#             return False
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'GET':
+            return obj.username == request.user
+        else:
+            return False
+        
+class IsRightRequest(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+    
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'GET':
+            mento_lat = request.GET.get('mentoLatitude', 0)
+            mento_lon = request.GET.get('mentoLongitude', 0)
+            mento = (float(mento_lat), float(mento_lon))
+            menti_lat = obj.mentiLatitude
+            menti_lon = obj.mentiLongitude
+            menti = (float(menti_lat), float(menti_lon))
+            distance = haversine(mento, menti, unit = 'km')
+            return float(distance) <= 1.0
+        elif request.method == 'DELETE':
+            return obj.menti == request.user
+        elif request.method == 'PATCH':
+            mento_lat = request.data['mentoLatitude']
+            mento_lon = request.data['mentoLongitude']
+            mento = (float(mento_lat), float(mento_lon))
+            menti_lat = obj.mentiLatitude
+            menti_lon = obj.mentiLongitude
+            menti = (float(menti_lat), float(menti_lon))
+            distance = haversine(mento, menti, unit = 'km')
+            return float(distance) <= 1.0
+        else:
+            False
 
-
-# class RequestModelViewSet(ModelViewSet):
-#     queryset = Request.objects.all()
-#     serializer_class = RequestBaseModelSerializer
-
-#     @action(detail=False, methods=['GET'])
-#     def get_request_all(self, request):
-#         lat = request.GET.get('mentoLatitude', 0)
-#         lon = request.GET.get('mentoLongitude', 0)
-#         print(self)
-#         data = {
-#             'requests' : [{'category' : '주문기기','content' : '후기입니다','name' : 3,'acceptTime' : '2023.08.9 오후 1:00',},]
-#         }
-#         return Response(data)
 
 class RequestList(APIView):
     permission_classes = [IsAdminUser]
@@ -68,7 +82,7 @@ class RequestMento(APIView):
             menti_lon = helps[i]['mentiLongitude']
             menti = (float(menti_lat), float(menti_lon))
             distance = haversine(mento, menti, unit = 'km')
-            if float(distance) <= 2.0:
+            if float(distance) <= 1.0:
                 mentiName = User.objects.get(id=helps[i]['menti_id']).name
                 requests_list.append({'category': helps[i]['category'],'content': helps[i]['content'],'mentiName': mentiName,'distance': distance})
         data = {'requests' : requests_list}
@@ -89,6 +103,7 @@ class RequestMenti(APIView):
 
 
 class RequestDatail(APIView):
+    permission_classes = [IsRightRequest]
 
     def get(self, request, pk): # 멘티 위치 상세보기
         menti_lat = Request.objects.get(id=pk).mentiLatitude
@@ -113,7 +128,7 @@ class RequestDatail(APIView):
 
 
 class RequestRecord(APIView):
-    # permission_classes = [IsMentiOrMento]
+    permission_classes = [IsMentiOrMento]
 
     def get(self, request, pk): # 멘티이면 요청내역, 멘토이면 도움내역 근데 주는 건 같음
         role = User.objects.get(id=pk).role
@@ -138,3 +153,17 @@ class RequestRecord(APIView):
         return Response(data)
     
     
+
+# class RequestModelViewSet(ModelViewSet):
+#     queryset = Request.objects.all()
+#     serializer_class = RequestBaseModelSerializer
+
+#     @action(detail=False, methods=['GET'])
+#     def get_request_all(self, request):
+#         lat = request.GET.get('mentoLatitude', 0)
+#         lon = request.GET.get('mentoLongitude', 0)
+#         print(self)
+#         data = {
+#             'requests' : [{'category' : '주문기기','content' : '후기입니다','name' : 3,'acceptTime' : '2023.08.9 오후 1:00',},]
+#         }
+#         return Response(data)
