@@ -130,7 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-ALLOWED_HOSTS = ['127.0.0.1', '172.30.1.69', '172.30.1.7', '172.30.1.20',]
+ALLOWED_HOSTS = ['192.168.160.144','192.168.160.83', '127.0.0.1']
 
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
