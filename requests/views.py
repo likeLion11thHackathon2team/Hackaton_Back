@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, BasePermission
 
 from .serializers import RequestBaseModelSerializer, RequestHelpModelSerializer, RequestAcceptModelSerializer
 
@@ -12,6 +13,16 @@ from .models import Request
 from accounts.models import User
 
 from haversine import haversine
+
+# class IsMentiOrMento(BasePermission):
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated
+    
+#     def has_object_permission(self, request, view, obj):
+#         if request.method == 'GET':
+#             return obj.menti == request.user or obj.mento == request.user
+#         else:
+#             return False
 
 
 # class RequestModelViewSet(ModelViewSet):
@@ -29,12 +40,16 @@ from haversine import haversine
 #         return Response(data)
 
 class RequestList(APIView):
+    permission_classes = [IsAdminUser]
+
     def get(self, request):
         request_all = Request.objects.all()
         serializer = RequestBaseModelSerializer(request_all, many = True)
         return Response(serializer.data)
 
 class RequestMento(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request): # 실시간 내게 들어온 요청(멘토)
         mento_lat = request.GET.get('mentoLatitude', 0)
         mento_lon = request.GET.get('mentoLongitude', 0)
@@ -62,6 +77,8 @@ class RequestMento(APIView):
     
     
 class RequestMenti(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request): # 멘티의 도움 요청
         data = request.data
         serializer = RequestHelpModelSerializer(data=data)
@@ -72,13 +89,13 @@ class RequestMenti(APIView):
 
 
 class RequestDatail(APIView):
+
     def get(self, request, pk): # 멘티 위치 상세보기
         menti_lat = Request.objects.get(id=pk).mentiLatitude
         menti_lon = Request.objects.get(id=pk).mentiLongitude
         data = {'mentiLatitude': menti_lat, 'mentiLongitude': menti_lon}
         return Response(data)
         
-    
     def delete(self, request, pk): # 멘티의 요청 취소
         help = Request.objects.get(id=pk)
         help.delete()
@@ -96,6 +113,8 @@ class RequestDatail(APIView):
 
 
 class RequestRecord(APIView):
+    # permission_classes = [IsMentiOrMento]
+
     def get(self, request, pk): # 멘티이면 요청내역, 멘토이면 도움내역 근데 주는 건 같음
         role = User.objects.get(id=pk).role
         record_list = []
@@ -117,4 +136,5 @@ class RequestRecord(APIView):
         
         data = {'records' : record_list}
         return Response(data)
+    
     
