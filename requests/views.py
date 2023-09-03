@@ -1,60 +1,64 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 from rest_framework import status
-from rest_framework.decorators import api_view, action
+# from rest_framework.decorators import api_view, action
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+# from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, BasePermission
+from django.http import JsonResponse
+# from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, BasePermission
 
-from .serializers import RequestBaseModelSerializer, RequestHelpModelSerializer, RequestAcceptModelSerializer
+from .serializers import RequestBaseModelSerializer, RequestHelpModelSerializer, RequestAcceptModelSerializer, MentoLocationSerializer
+# from accounts.serializers import UserRequestSerializer
 
 from .models import Request
 from accounts.models import User
 
 from haversine import haversine
 
-class IsMentiOrMento(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated
+import json
+
+# class IsMentiOrMento(BasePermission):
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated
     
-    def has_object_permission(self, request, view, obj):
-        if request.method == 'GET':
-            return obj.username == request.user
-        else:
-            return False
+#     def has_object_permission(self, request, view, obj):
+#         if request.method == 'GET':
+#             return obj.username == request.user
+#         else:
+#             return False
         
-class IsRightRequest(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated
+# class IsRightRequest(BasePermission):
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated
     
-    def has_object_permission(self, request, view, obj):
-        if request.method == 'GET':
-            mento_lat = request.GET.get('mentoLatitude', 0)
-            mento_lon = request.GET.get('mentoLongitude', 0)
-            mento = (float(mento_lat), float(mento_lon))
-            menti_lat = obj.mentiLatitude
-            menti_lon = obj.mentiLongitude
-            menti = (float(menti_lat), float(menti_lon))
-            distance = haversine(mento, menti, unit = 'km')
-            return float(distance) <= 1.0
-        elif request.method == 'DELETE':
-            return obj.menti == request.user
-        elif request.method == 'PATCH':
-            mento_lat = request.data['mentoLatitude']
-            mento_lon = request.data['mentoLongitude']
-            mento = (float(mento_lat), float(mento_lon))
-            menti_lat = obj.mentiLatitude
-            menti_lon = obj.mentiLongitude
-            menti = (float(menti_lat), float(menti_lon))
-            distance = haversine(mento, menti, unit = 'km')
-            return float(distance) <= 1.0
-        else:
-            False
+#     def has_object_permission(self, request, view, obj):
+#         if request.method == 'GET':
+#             mento_lat = request.GET.get('mentoLatitude', 0)
+#             mento_lon = request.GET.get('mentoLongitude', 0)
+#             mento = (float(mento_lat), float(mento_lon))
+#             menti_lat = obj.mentiLatitude
+#             menti_lon = obj.mentiLongitude
+#             menti = (float(menti_lat), float(menti_lon))
+#             distance = haversine(mento, menti, unit = 'km')
+#             return float(distance) <= 1.0
+#         elif request.method == 'DELETE':
+#             return obj.menti == request.user
+#         elif request.method == 'PATCH':
+#             mento_lat = request.data['mentoLatitude']
+#             mento_lon = request.data['mentoLongitude']
+#             mento = (float(mento_lat), float(mento_lon))
+#             menti_lat = obj.mentiLatitude
+#             menti_lon = obj.mentiLongitude
+#             menti = (float(menti_lat), float(menti_lon))
+#             distance = haversine(mento, menti, unit = 'km')
+#             return float(distance) <= 1.0
+#         else:
+#             False
 
 
 class RequestList(APIView):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
         request_all = Request.objects.all()
@@ -62,11 +66,18 @@ class RequestList(APIView):
         return Response(serializer.data)
 
 class RequestMento(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request): # 실시간 내게 들어온 요청(멘토)
-        mento_lat = request.GET.get('mentoLatitude', 0)
-        mento_lon = request.GET.get('mentoLongitude', 0)
+    def post(self, request): # 실시간 내게 들어온 요청(멘토)
+        # help = User.objects.create(role='멘토')
+        print(request.content_type)
+        serializer = MentoLocationSerializer(data=request.data)
+        if serializer.is_valid():
+            mento_lat = serializer.data.get('mentoLatitude', 0)
+            mento_lon = serializer.data.get('mentoLongitude', 0)
+        else:
+            return Response(serializer.errors)
+        # mento_lat = request.data.get('mentoLatitude', 0)
+        # mento_lon = request.data.get('mentoLongitude', 0)
         mento = (float(mento_lat), float(mento_lon))
         helps = Request.objects.values()
         print(helps)
@@ -83,27 +94,32 @@ class RequestMento(APIView):
             menti = (float(menti_lat), float(menti_lon))
             distance = haversine(mento, menti, unit = 'km')
             if float(distance) <= 1.0:
-                mentiName = User.objects.get(id=helps[i]['menti_id']).name
-                requests_list.append({'category': helps[i]['category'],'content': helps[i]['content'],'mentiName': mentiName,'distance': distance, 'mentiLatitude':menti_lat, 'mentiLongitude':menti_lon})
-        data = {'requests' : requests_list}
+                mentiName = '비회원'
+                # mentiName = User.objects.get(id=helps[i]['menti_id']).name
+                requests_list.append({"category": helps[i]['category'],"content": helps[i]['content'],"mentiName": mentiName,"distance": distance, "mentiLatitude":float(menti_lat), "mentiLongitude":float(menti_lon)})
+        data = {"requests" : requests_list}
+        print('\n\n\n')
         print(data)
         return Response(data)
     
     
 class RequestMenti(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request): # 멘티의 도움 요청
         data = request.data
         serializer = RequestHelpModelSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            print(data)
+            print('\n\n\n')
+            print(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors)
 
 
 class RequestDatail(APIView):
-    permission_classes = [IsRightRequest]
+    # permission_classes = [IsRightRequest]
 
     def get(self, request, pk): # 멘티 위치 상세보기
         menti_lat = Request.objects.get(id=pk).mentiLatitude
@@ -128,7 +144,7 @@ class RequestDatail(APIView):
 
 
 class RequestRecord(APIView):
-    permission_classes = [IsMentiOrMento]
+    # permission_classes = [IsMentiOrMento]
 
     def get(self, request, pk): # 멘티이면 요청내역, 멘토이면 도움내역 근데 주는 건 같음
         role = User.objects.get(id=pk).role
