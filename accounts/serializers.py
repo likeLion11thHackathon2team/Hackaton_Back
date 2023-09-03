@@ -23,3 +23,9 @@ class RequestBaseModelSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+
+class UserRequestSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['role']
