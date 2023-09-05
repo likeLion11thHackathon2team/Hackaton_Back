@@ -100,7 +100,7 @@ class RequestMento(APIView):
         data = {"requests" : requests_list}
         print('\n\n\n')
         print(data)
-        return Response(data)
+        return JsonResponse(data)
     
     
 class RequestMenti(APIView):
