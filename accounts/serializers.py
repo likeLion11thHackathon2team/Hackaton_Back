@@ -1,8 +1,9 @@
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from .models import User
 
-class UserSerializer(ModelSerializer):
+class UserSignupSerializer(ModelSerializer):
     def create(self, validated_date):
         user = User.objects.create_user(
             username = validated_date['username'],
@@ -12,12 +13,14 @@ class UserSerializer(ModelSerializer):
         return user
     class Meta:
         model = User
-        fields = [ 'username', 'password']
+        fields = ['username', 'password', 'password2']
 
-class UserLoginSerializer(ModelSerializer):
+
+class UserLoginSerializer(ModelSerializer): # 이거 그냥 안 씀
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id']
+        # fields = ['id', 'name', 'role'] 프로필 세팅 만들고 나서 넣어야됨
 
 class RequestBaseModelSerializer(ModelSerializer):
     class Meta:
