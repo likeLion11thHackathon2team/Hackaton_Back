@@ -153,8 +153,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-CORS_ORIGIN_WHITELIST = []
-# 'https://hackaton-front-silk.vercel.app/'
+CORS_ORIGIN_WHITELIST = ['https://hackaton-front-silk.vercel.app',]
+
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

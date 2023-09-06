@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 
-from .serializers import UserLoginSerializer, UserSignupSerializer
+from .serializers import UserSignupSerializer, UserProfileSerializer
 from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -83,3 +83,17 @@ class UserLogin(APIView):
         #         return Response(UserSerializer.errors)
         # else:
         #     return Response(status=401)
+
+
+class UserProfile(APIView): # pk는 user id 값
+    def get(self, request, pk):
+        pass
+    
+    def patch(self, request, pk):
+        user = User.objects.get(id=pk)
+        serializer = UserProfileSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
