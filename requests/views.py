@@ -135,7 +135,7 @@ class RequestDatail(APIView):
     def patch(self, request, pk): # 멘토의 요청 수락
         data = request.data
         help = Request.objects.get(id=pk)
-        serializer = RequestAcceptModelSerializer(help ,data=data)
+        serializer = RequestAcceptModelSerializer(help, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
