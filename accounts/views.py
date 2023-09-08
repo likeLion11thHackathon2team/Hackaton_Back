@@ -86,10 +86,16 @@ class UserLogin(APIView):
 
 
 class UserProfile(APIView): # pk는 user id 값
-    def get(self, request, pk):
-        pass
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def get(self, request, pk): # 프로필 불러오기
+        user = User.objects.get(id=pk)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+        
     
-    def patch(self, request, pk):
+    def post(self, request, pk): # 프로필 세팅
         user = User.objects.get(id=pk)
         serializer = UserProfileSerializer(user, data=request.data)
         if serializer.is_valid():
